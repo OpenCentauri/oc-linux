@@ -122,9 +122,8 @@ exit:
 	return ret;
 }
 
-static int sunxi_pwm_get_config(struct platform_device *pdev, struct sunxi_pwm_config *config)
+static int sunxi_pwm_get_config(struct device_node *np, struct sunxi_pwm_config *config)
 {
-	struct device_node *np = pdev->dev.of_node;
 	int ret = 0;
 
 	/* read register config */
@@ -141,8 +140,6 @@ static int sunxi_pwm_get_config(struct platform_device *pdev, struct sunxi_pwm_c
 		config->bind_pwm = 255;
 		ret = 0;
 	}
-
-	of_node_put(np);
 
 	return ret;
 }
@@ -870,7 +867,6 @@ static int sunxi_pwm_probe(struct platform_device *pdev)
 	struct sunxi_pwm_chip *pwm;
 	struct device_node *np = pdev->dev.of_node;
 	int i;
-	struct platform_device *pwm_pdevice;
 	struct device_node *sub_np;
 
 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
@@ -925,11 +921,12 @@ static int sunxi_pwm_probe(struct platform_device *pdev)
 		sub_np = of_parse_phandle(np, "sunxi-pwms", i);
 		if (IS_ERR_OR_NULL(sub_np)) {
 			pr_err("%s: can't parse \"sunxi-pwms\" property\n", __func__);
-			return -EINVAL;
+			ret = -EINVAL;
+			goto err_get_config;
 		}
 
-		pwm_pdevice = of_find_device_by_node(sub_np);
-		ret =	sunxi_pwm_get_config(pwm_pdevice, &pwm->config[i]);
+		ret = sunxi_pwm_get_config(sub_np, &pwm->config[i]);
+		of_node_put(sub_np);
 		if (ret) {
 			pr_err("Get config failed,exit!\n");
 			goto err_get_config;
@@ -1037,4 +1034,3 @@ MODULE_AUTHOR("liuli");
 MODULE_DESCRIPTION("pwm driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:sunxi-pwm");
-
