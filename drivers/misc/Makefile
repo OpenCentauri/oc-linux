@@ -65,3 +65,4 @@ obj-$(CONFIG_SUNXI_BOOTEVENT)   += sunxi-bootevent/
 obj-y                           += sunxi-gorilla/
 obj-$(CONFIG_ARCH_SUNXI)        += sunxi-tvutils/
 obj-$(CONFIG_SUNXI_CPU_COMM)	+= sunxi_cpu_comm.o
+obj-$(CONFIG_KBUF)		+= kbuf.o
