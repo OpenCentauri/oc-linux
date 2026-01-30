@@ -493,6 +493,28 @@ config SUNXI_CPU_COMM
 	help
 	  If you say yes here you get support for tv subsystem cpu comm protocol.
 
+config KBUF
+	tristate "Allwinner KBUF (Kernel Buffer) Driver"
+	depends on (ARCH_SUNXI || COMPILE_TEST) && OF && HAS_DMA
+	select DMA_CMA if CMA
+	default y if ARCH_SUNXI
+	help
+	  This driver provides support for Allwinner kernel buffer management.
+	  It handles allocation and management of non-cached kernel buffers
+	  for DMA operations and other kernel subsystems. This is a character
+	  device driver that exports APIs for buffer allocation with mmap
+	  support for userspace access.
+
+	  If you have an Allwinner-based SoC and want to use the KBUF
+	  functionality, say Y or M here. If unsure, say N.
+
+config KBUF_TYPE_NONCACHE
+	bool "Enable non-cached buffer type"
+	depends on KBUF
+	help
+	  Enable support for non-cached kernel buffers. This is required
+	  for proper DMA operation on Allwinner SoCs.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
