@@ -234,6 +234,7 @@ static void sun8iw20_nvmem_xlate(u32 *versions, char *name)
 
 	switch ((ver_data.nv_speed >> 8) & 0x0f) {
 	default:
+		*versions = 0b0001;
 		/* vf1 table */
 		vf = 0;
 		break;
